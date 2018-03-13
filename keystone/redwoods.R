@@ -1,8 +1,32 @@
 library(rgbif)
-foo <- occ_data(geometry=c(-125.0, 38.4, -121.8, 40.9), limit = 20)
-foo <- occ_data(geometry='POLYGON((30.1 10.1, 10 20, 20 40, 40 40, 30.1 10.1))', limit = 200)
+library(rgdal)
 
-m <- matrix(c(30.1, 10.1, 10, 20, 20, 40, 40, 40, 30.1, 10.1), ncol = 2, byrow = TRUE)
-plot(m, col = 'red')
-polygon(m[, 1], m[, 2])
-points(foo$data[, c('decimalLongitude', 'decimalLatitude')])
+setwd('~/Dropbox/Research/complexicon/keystone')
+source('~/Dropbox/api_auth.R')
+
+rwPoly <- readOGR('redwoods.kml', 'redwoods.kml')
+rwCoord <- rwPoly@polygons[[1]]@Polygons[[1]]@coords
+rwGBIFPoly <-
+    sprintf('POLYGON((%s))', paste(paste(rwCoord[, 1], rwCoord[, 2], sep = ' '), collapse = ', '))
+
+rwDownload <- occ_download(sprintf('geometry = %s', rwGBIFPoly))
+
+ready <- FALSE
+allTime <- 0
+
+while (!ready) {
+    Sys.sleep(20)
+    m <- occ_download_meta(rwDownload)
+    ready <- m$status == 'SUCCEEDED'
+    allTime <- allTime + 20
+    
+    if (allTime > 45 * 60)
+        break
+}
+
+if (ready) {
+    rwOcc <- occ_download_import(occ_download_get(m$key))
+    write.csv(rwOcc, file = 'rwOcc.csv', row.names = FALSE)
+} else {
+    print('failed to download')
+}
