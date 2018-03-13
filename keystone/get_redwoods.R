@@ -15,10 +15,11 @@ ready <- FALSE
 allTime <- 0
 
 while (!ready) {
-    Sys.sleep(20)
+    Sys.sleep(30)
     m <- occ_download_meta(rwDownload)
     ready <- m$status == 'SUCCEEDED'
-    allTime <- allTime + 20
+    allTime <- allTime + 30
+    print(paste('time waited:', allTime / 30))
     
     if (allTime > 45 * 60)
         break
