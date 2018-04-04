@@ -2,11 +2,20 @@ library(igraph)
 library(pika)
 
 ## set up the network
-set.seed(2)
-foo <- rstick(1000, r = 0.5)
+set.seed(20)
+foo <- rstick(1000, r = 0.7)
 
-if(sum(foo) %% 2) foo[1] <- foo[1] + 1
+if(sum(foo) %% 2 != 0) foo[1] <- foo[1] + 1
 x <- sample_degseq(foo, method = 'vl')
+
+
+x <- sample_gnm(1000, 1000)
+x <- delete_vertices(x, degree(x) == 0)
+plot(degree_distribution(x))
+
+
+plot(x, vertex.size = 5, vertex.label = NA, edge.width = 1)
+
 
 ## add extra edges for the redwood
 xadj <- as_adj(x)
@@ -73,4 +82,13 @@ for(i in 1:frames){
 
 ## run ImageMagick
 system('convert *.png -delay 3 -loop 0 ../redwood_zoom.gif')
+
+
+## simulate extinction
+xadjExt <- xadj[-redwood, -redwood]
+
+theseDead <- which(rowSums(as.matrix(xadjExt)) == 0)
+xadjExt <- xadjExt[-theseDead, -theseDead]
+plot(graph_from_adjacency_matrix(xadjExt, mode = 'undirected'), vertex.size = 5, vertex.label = NA)
+
 
