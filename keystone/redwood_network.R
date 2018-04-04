@@ -32,7 +32,7 @@ l[redwood, ]
 ## annimation code kindly borrowed from 
 ## https://davetang.org/muse/2015/02/12/animated-plots-using-r
 
-setwd('./keystone/temp')
+setwd('~/Dropbox/Research/complexicon/keystone/temp')
 
 ## number of frames
 frames <- 50
@@ -72,5 +72,5 @@ for(i in 1:frames){
 }
 
 ## run ImageMagick
-system('convert *.png -delay 3 -loop 0 redwood_zoom.gif')
+system('convert *.png -delay 3 -loop 0 ../redwood_zoom.gif')
 
