@@ -29,6 +29,11 @@ l[, 2] <- l[, 2] - l[redwood, 2]
 l[redwood, ]
 
 
+## annimation code kindly borrowed from 
+## https://davetang.org/muse/2015/02/12/animated-plots-using-r
+
+setwd('./keystone/temp')
+
 ## number of frames
 frames <- 50
 
