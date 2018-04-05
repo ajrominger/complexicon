@@ -2,20 +2,11 @@ library(igraph)
 library(pika)
 
 ## set up the network
-set.seed(20)
-foo <- rstick(1000, r = 0.7)
+set.seed(2)
+foo <- rstick(1000, r = 0.5)
 
 if(sum(foo) %% 2 != 0) foo[1] <- foo[1] + 1
 x <- sample_degseq(foo, method = 'vl')
-
-
-x <- sample_gnm(1000, 1000)
-x <- delete_vertices(x, degree(x) == 0)
-plot(degree_distribution(x))
-
-
-plot(x, vertex.size = 5, vertex.label = NA, edge.width = 1)
-
 
 ## add extra edges for the redwood
 xadj <- as_adj(x)
@@ -35,7 +26,6 @@ set.seed(1)
 l <- layout_with_drl(xnew)
 l[, 1] <- l[, 1] - l[redwood, 1]
 l[, 2] <- l[, 2] - l[redwood, 2]
-l[redwood, ]
 
 
 ## annimation code kindly borrowed from 
@@ -85,6 +75,33 @@ system('convert *.png -delay 3 -loop 0 ../redwood_zoom.gif')
 
 
 ## simulate extinction
+xadj <- as.matrix(as_adj(xnew, type = 'both'))
+
+xadjKey <- sapply(1:nrow(xadj), function(i) {
+    x <- xadj[i, ]
+    n <- rtpois(1, 1)
+    if(n > sum(x)) n <- sum(x)
+    out <- numeric(length(x))
+    out[sample(which(x == 1), n)] <- 1
+    
+    return(out)
+})
+
+colSums(xadjKey)
+
+
+
+
+
+links <- which(xadj == 1, arr.ind = TRUE)
+keyLinks <- sample(0:1, nrow(links), replace = TRUE, prob = c(0.5, 0.5))
+
+
+theseDead <- rep(FALSE, vcount(xnew))
+
+theseDead[redwood] <- TRUE
+
+
 xadjExt <- xadj[-redwood, -redwood]
 
 theseDead <- which(rowSums(as.matrix(xadjExt)) == 0)
