@@ -131,7 +131,7 @@ xext <- xnew
 xext <- set_edge_attr(xext, 'color', value = edgeCol)
 
 ## loop through extinctions
-for(i in 1:5) {
+for(i in 1:frames) {
     if(i == 1) {
         theseDead <- redwood
     } else {
